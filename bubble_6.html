@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>bubble6</title>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #bubble {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100vh;
+    }
+    .circle_opacity {
+      opacity: 1 !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="bubble"></div>
+</body>
+<script>
+  (async() => {
+    const margin = {
+      top: 10,
+      bottom: 10,
+      right: 10,
+      left: 10,
+    }
+    let drag, simulation
+    const width = Number(document.getElementById('bubble').clientWidth)
+    const height = Number(document.getElementById('bubble').clientHeight)
+
+    let data1 = d3.json("word_data/data.json")
+    let data = await data1
+    const root = d3.hierarchy(data)
+    const link = root.links()
+    const node = root.descendants()
+
+    console.log(link)
+    console.log(node)
+    //  创建力导向
+    simulation = d3.forceSimulation(node)
+            .force('link', d3.forceLink(link).distance(0).strength(1))
+            .force('charge', d3.forceManyBody().strength(-50))
+            .force('center', d3.forceCenter(width/2, height/2))
+            .force('x', d3.forceX())
+            .force('y', d3.forceY())
+            .on('tick', ticked)
+
+    const svg = d3.select('#bubble')
+      .append('svg')
+      .attr('viewBox', `0, 0, ${width}, ${height}`)
+
+    const links = svg.append('g')
+      .attr('class', 'linkBox')
+      .selectAll('line')
+      .data(link)
+      .join('line')
+      .attr('stroke-width', 1.5)
+      .attr('stroke', '#ccc')
+
+    const nodes = svg.append('g')
+      .attr('class', 'nodeBox')
+      .selectAll('circle')
+      .data(node)
+      .join('circle')
+      .attr('fill', '#333')
+      .attr('r', 3.5)
+      .call(drag(simulation))
+      // .call(d3.drag()
+      //         .on('start', started)
+      //         .on('drag', dragged)
+      //         .on('end', ended)
+      // )
+
+    //  每次碰撞力更新的位置
+    function ticked() {
+      links
+        .attr('x1', d => d.source.x)
+        .attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x)
+        .attr('y2', d => d.target.y)
+
+      nodes
+        .attr('cx', d => d.x)
+        .attr('cy', d => d.y)
+    }
+
+    invalidation.then(() => simulation.stop())
+
+    drag = simulation => {
+      //  拖拽
+      function started(e, d) {
+        // console.log(e)
+        if (!e.active) {
+          //设置衰减系数，对节点位置移动过程的模拟，数值越高移动越快，数值范围[0，1]
+          simulation.alphaTarget(.3).restart()
+        }
+        d.fx = d.x
+        d.fy = d.y
+      }
+
+      //  拖拽
+      function dragged(e, d) {
+        d.fx = e.x
+        d.fy = e.y
+      }
+
+      //  拖拽
+      function ended(e, d) {
+        // console.log(e)
+        if (!e.active) {
+          //设置衰减系数，对节点位置移动过程的模拟，数值越高移动越快，数值范围[0，1]
+          simulation.alphaTarget(0)
+        }
+        d.fx = null
+        d.fy = null
+      }
+    }
+
+
+  })()
+</script>
+</html>

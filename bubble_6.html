@@ -73,12 +73,11 @@
       .join('circle')
       .attr('fill', '#333')
       .attr('r', 3.5)
-      .call(drag(simulation))
-      // .call(d3.drag()
-      //         .on('start', started)
-      //         .on('drag', dragged)
-      //         .on('end', ended)
-      // )
+      .call(d3.drag()
+              .on('start', started)
+              .on('drag', dragged)
+              .on('end', ended)
+      )
 
     //  每次碰撞力更新的位置
     function ticked() {
@@ -92,40 +91,33 @@
         .attr('cx', d => d.x)
         .attr('cy', d => d.y)
     }
-
-    invalidation.then(() => simulation.stop())
-
-    drag = simulation => {
-      //  拖拽
-      function started(e, d) {
-        // console.log(e)
-        if (!e.active) {
-          //设置衰减系数，对节点位置移动过程的模拟，数值越高移动越快，数值范围[0，1]
-          simulation.alphaTarget(.3).restart()
-        }
-        d.fx = d.x
-        d.fy = d.y
+    //  拖拽
+    function started(e, d) {
+      // console.log(e)
+      if (!e.active) {
+        //设置衰减系数，对节点位置移动过程的模拟，数值越高移动越快，数值范围[0，1]
+        simulation.alphaTarget(.3).restart()
       }
-
-      //  拖拽
-      function dragged(e, d) {
-        d.fx = e.x
-        d.fy = e.y
-      }
-
-      //  拖拽
-      function ended(e, d) {
-        // console.log(e)
-        if (!e.active) {
-          //设置衰减系数，对节点位置移动过程的模拟，数值越高移动越快，数值范围[0，1]
-          simulation.alphaTarget(0)
-        }
-        d.fx = null
-        d.fy = null
-      }
+      d.fx = d.x
+      d.fy = d.y
     }
 
+    //  拖拽
+    function dragged(e, d) {
+      d.fx = e.x
+      d.fy = e.y
+    }
 
+    //  拖拽
+    function ended(e, d) {
+      // console.log(e)
+      if (!e.active) {
+        //设置衰减系数，对节点位置移动过程的模拟，数值越高移动越快，数值范围[0，1]
+        simulation.alphaTarget(0)
+      }
+      d.fx = null
+      d.fy = null
+    }
   })()
 </script>
 </html>

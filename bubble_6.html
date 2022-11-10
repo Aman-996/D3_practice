@@ -43,8 +43,8 @@
     const link = root.links()
     const node = root.descendants()
 
-    console.log(link)
-    console.log(node)
+    // console.log(link)
+    // console.log(node)
     //  创建力导向
     simulation = d3.forceSimulation(node)
             .force('link', d3.forceLink(link).distance(0).strength(1))
@@ -91,8 +91,6 @@
         .attr('cx', d => d.x)
         .attr('cy', d => d.y)
     }
-
-
     //  拖拽
     function started(e, d) {
       // console.log(e)
@@ -100,10 +98,7 @@
         //设置衰减系数，对节点位置移动过程的模拟，数值越高移动越快，数值范围[0，1]
         simulation.alphaTarget(.3).restart()
       }
-      d.fx = d.x
-      d.fy = d.y
     }
-
     //  拖拽
     function dragged(e, d) {
       d.fx = e.x
@@ -120,8 +115,6 @@
       d.fx = null
       d.fy = null
     }
-
-
   })()
 </script>
 </html>
